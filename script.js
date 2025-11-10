@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Установка даты обновления
     document.getElementById('update-date').textContent = new Date().toLocaleString();
     
-    // Инициализация карты с увеличенной сеткой
-    initMap(60, 60);
+    // Инициализация карты с увеличенной сеткой 120x120
+    initMap(120, 120);
     
     // Инициализация мини-карты
     initMiniMap();
@@ -27,9 +27,9 @@ document.addEventListener('DOMContentLoaded', function() {
 const spreadProbabilities = {
     'water': 0,      // Полный барьер
     'sand': 0,       // Полный барьер  
-    'forest': 0.8,   // Высокая скорость
-    'soil': 0.4,     // Средняя скорость
-    'farmland': 0.3, // Низкая скорость
+    'forest': 0.9,   // Высокая скорость
+    'soil': 0.3,     // Средняя скорость
+    'farmland': 0.2, // Низкая скорость
     'unknown': 0.5   // По умолчанию
 };
 
@@ -44,7 +44,7 @@ const surfaceToDangerLevel = {
 };
 
 // Инициализация основной карты
-function initMap(rows = 60, cols = 60) {
+function initMap(rows = 120, cols = 120) {
     const mapGrid = document.getElementById('map-grid');
     mapGrid.innerHTML = '';
     
@@ -87,7 +87,7 @@ function handleMapCellClick(cell, event) {
 function updateMapOverlay(cell) {
     const overlay = document.querySelector('.map-overlay');
     const index = parseInt(cell.dataset.index);
-    const cols = 60;
+    const cols = 120;
     const x = index % cols;
     const y = Math.floor(index / cols);
     const surfaceType = cell.dataset.surfaceType;
@@ -166,7 +166,7 @@ function analyzeNDVI() {
     reader.readAsDataURL(file);
 }
 
-// УЛУЧШЕННАЯ функция классификации цвета NDVI
+// Функция классификации цвета NDVI
 function classifyNDVIColor(r, g, b) {
     // Нормализуем цвета
     const total = r + g + b;
@@ -194,22 +194,41 @@ function classifyNDVIColor(r, g, b) {
     return 'unknown';
 }
 
-// УЛУЧШЕННАЯ обработка NDVI изображения
+// Обработка NDVI изображения
 function processNDVIImage(img) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
-    // Устанавливаем размеры canvas под размер сетки
-    const mapGrid = document.getElementById('map-grid');
-    const cols = 60;
-    const rows = 60;
+    // Устанавливаем размеры canvas под размер сетки 120x120
+    const cols = 120;
+    const rows = 120;
     
     canvas.width = cols;
     canvas.height = rows;
-    
+
     try {
-        // Рисуем изображение с масштабированием под размер сетки
-        ctx.drawImage(img, 0, 0, cols, rows);
+        // Вычисляем соотношения сторон
+        const imgRatio = img.width / img.height;
+        const canvasRatio = cols / rows;
+        
+        let sourceWidth, sourceHeight, sourceX, sourceY;
+        
+        if (imgRatio > canvasRatio) {
+            // Изображение шире - обрезаем по бокам
+            sourceHeight = img.height;
+            sourceWidth = img.height * canvasRatio;
+            sourceX = (img.width - sourceWidth) / 2;
+            sourceY = 0;
+        } else {
+            // Изображение выше - обрезаем сверху и снизу
+            sourceWidth = img.width;
+            sourceHeight = img.width / canvasRatio;
+            sourceX = 0;
+            sourceY = (img.height - sourceHeight) / 2;
+        }
+        
+        // Рисуем изображение с обрезкой и масштабированием
+        ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, cols, rows);
         
         // Анализируем пиксели
         const imageData = ctx.getImageData(0, 0, cols, rows);
@@ -218,6 +237,7 @@ function processNDVIImage(img) {
         const mapCells = document.querySelectorAll('.map-cell');
         
         let classifiedCount = 0;
+        const typeCount = { water: 0, forest: 0, sand: 0, soil: 0, farmland: 0, unknown: 0 };
         
         // Обрабатываем каждый пиксель
         for (let y = 0; y < rows; y++) {
@@ -235,14 +255,19 @@ function processNDVIImage(img) {
                 // Обновляем соответствующую клетку
                 if (mapCells[pixelIndex]) {
                     updateCellSurface(mapCells[pixelIndex], surfaceType);
-                    if (surfaceType !== 'unknown') {
-                        classifiedCount++;
-                    }
+                    typeCount[surfaceType]++;
+                    classifiedCount++;
                 }
             }
         }
         
-        alert(`NDVI анализ завершен! Классифицировано ${classifiedCount} из ${cols * rows} клеток.`);
+        // Показываем статистику
+        const stats = Object.entries(typeCount)
+            .filter(([type, count]) => count > 0)
+            .map(([type, count]) => `${type}: ${count}`)
+            .join(', ');
+        
+        alert(`NDVI анализ завершен!\nКлассифицировано: ${classifiedCount} клеток\nРаспределение: ${stats}`);
         
     } catch (error) {
         console.error('Ошибка обработки изображения:', error);
@@ -370,7 +395,7 @@ function spreadFire(cells, index) {
 
 // Сброс карты
 function resetMap() {
-    initMap(60, 60);
+    initMap(120, 120);
     
     // Сбрасываем результаты
     const resultsWidget = document.getElementById('results-widget');
@@ -415,8 +440,8 @@ function startSimulation() {
 
 // Модифицированная функция распространения пожара
 function spreadToNeighbors(cells, index) {
-    const cols = 60;
-    const rows = 60;
+    const cols = 120;
+    const rows = 120;
     
     const windDirection = parseInt(document.getElementById('wind-direction').value) || 0;
     const windEffect = parseFloat(document.getElementById('wind-effect').value) || 1.0;
@@ -460,8 +485,8 @@ function spreadToNeighbors(cells, index) {
                     // Рекурсивно распространяем пожар
                     setTimeout(() => {
                         spreadToNeighbors(cells, neighbor.index);
-                    }, 500 + Math.random() * 1000);
-                }, Math.random() * 800);
+                    }, 300 + Math.random() * 500);
+                }, Math.random() * 400);
             }
         }
     });
@@ -539,68 +564,148 @@ function enableManualSurfaceEditing() {
     surfacePanel.querySelector('button[data-type="forest"]').click();
 }
 
-// УЛУЧШЕННАЯ функция для создания тестовой NDVI карты
+// Функция для создания тестовой NDVI карты
 function createTestNDVI() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const cols = 60;
-    const rows = 60;
+    const cols = 120;
+    const rows = 120;
     
     canvas.width = cols;
     canvas.height = rows;
-    
-    // Создаем тестовую карту с разными типами поверхностей
+
+    // Создаем шум Перлина для естественных форм
+    function noise(x, y) {
+        return Math.sin(x * 0.05) * Math.cos(y * 0.05) + 
+               Math.sin(x * 0.025 + y * 0.015) * 0.5 +
+               Math.sin(x * 0.01) * Math.cos(y * 0.02) * 0.3;
+    }
+
+    // Функция для проверки принадлежности к эллипсу
+    function inEllipse(x, y, centerX, centerY, radiusX, radiusY, angle) {
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        const dx = x - centerX;
+        const dy = y - centerY;
+        const rotatedX = dx * cos + dy * sin;
+        const rotatedY = -dx * sin + dy * cos;
+        return (rotatedX * rotatedX) / (radiusX * radiusX) + 
+               (rotatedY * rotatedY) / (radiusY * radiusY) <= 1;
+    }
+
+    // Создаем различные зоны с естественными формами
+    const zones = [
+        { type: 'water', centerX: 20, centerY: 20, radiusX: 15, radiusY: 12, angle: 0.3 },
+        { type: 'water', centerX: 100, centerY: 15, radiusX: 10, radiusY: 8, angle: -0.2 },
+        { type: 'sand', centerX: 110, centerY: 30, radiusX: 25, radiusY: 15, angle: 0.5 },
+        { type: 'forest', centerX: 60, centerY: 60, radiusX: 40, radiusY: 30, angle: 0.1 },
+        { type: 'forest', centerX: 30, centerY: 80, radiusX: 20, radiusY: 25, angle: -0.4 },
+        { type: 'soil', centerX: 90, centerY: 90, radiusX: 30, radiusY: 20, angle: 0.2 },
+        { type: 'farmland', centerX: 50, centerY: 110, radiusX: 15, radiusY: 12, angle: 0.6 }
+    ];
+
+    // Создаем реки (линейные зоны)
+    function inRiver(x, y) {
+        // Река 1 - диагональная
+        const river1 = Math.abs((x - y * 0.7) - 40) < 3 + noise(x, y) * 2;
+        // Река 2 - горизонтальная с изгибом
+        const river2 = Math.abs(y - 50 - Math.sin(x * 0.05) * 10) < 2 + noise(x, y);
+        return river1 || river2;
+    }
+
+    // Создаем дороги (песчаные полосы)
+    function inRoad(x, y) {
+        const road1 = Math.abs(x - 80) < 2 + noise(x, y) * 1;
+        const road2 = Math.abs(y - 70 - Math.cos(x * 0.04) * 6) < 1.5 + noise(x, y) * 1;
+        return road1 || road2;
+    }
+
     for (let x = 0; x < cols; x++) {
         for (let y = 0; y < rows; y++) {
-            let r, g, b;
-            
-            // Создаем реалистичные паттерны
-            if (x < 15 && y < 15) {
-                // Вода - синий (озеро в левом верхнем углу)
-                r = 0; g = 100; b = 255;
-            } else if (x > 45 && y < 20) {
-                // Песок - желтый (пляж в правом верхнем углу)
-                r = 240; g = 230; b = 50;
-            } else if (x > 35 && x < 55 && y > 40 && y < 55) {
-                // Сельхозземли - бирюзовый (поле в правом нижнем углу)
-                r = 70; g = 180; b = 170;
-            } else if ((x > 10 && x < 50 && y > 10 && y < 50) || 
-                      (x > 20 && x < 40 && y > 5 && y < 25)) {
-                // Лес - зеленый (большой лесной массив)
-                r = 40; g = 160; b = 60;
-            } else if (x < 30 || y < 30) {
-                // Почва - красный (открытые участки)
-                r = 180; g = 80; b = 60;
-            } else {
-                // Смешанная местность
-                if (Math.random() > 0.5) {
-                    r = 50; g = 140; b = 50; // Лес
-                } else {
-                    r = 160; g = 100; b = 70; // Почва
+            let surfaceType = 'unknown';
+            let foundInZone = false;
+
+            // Проверяем реки (преимущество)
+            if (inRiver(x, y)) {
+                surfaceType = 'water';
+                foundInZone = true;
+            }
+            // Проверяем дороги
+            else if (inRoad(x, y)) {
+                surfaceType = 'sand';
+                foundInZone = true;
+            }
+            // Проверяем основные зоны
+            else {
+                for (const zone of zones) {
+                    if (inEllipse(x, y, zone.centerX, zone.centerY, 
+                                 zone.radiusX + noise(x, y) * 5, 
+                                 zone.radiusY + noise(x, y) * 5, 
+                                 zone.angle)) {
+                        surfaceType = zone.type;
+                        foundInZone = true;
+                        break;
+                    }
                 }
             }
-            
-            // Добавляем небольшие вариации для реалистичности
-            r += Math.random() * 20 - 10;
-            g += Math.random() * 20 - 10;
-            b += Math.random() * 20 - 10;
-            
-            // Ограничиваем значения
-            r = Math.max(0, Math.min(255, r));
-            g = Math.max(0, Math.min(255, g));
-            b = Math.max(0, Math.min(255, b));
-            
+
+            // Если не в зоне, создаем естественный ландшафт на основе шума
+            if (!foundInZone) {
+                const n = noise(x, y);
+                if (n > 0.3) {
+                    surfaceType = 'forest';
+                } else if (n > -0.2) {
+                    surfaceType = 'soil';
+                } else if (n > -0.5) {
+                    surfaceType = 'farmland';
+                } else {
+                    surfaceType = 'sand';
+                }
+            }
+
+            // Устанавливаем цвет в зависимости от типа поверхности
+            let r, g, b;
+            switch (surfaceType) {
+                case 'water':
+                    r = 0 + Math.random() * 30;
+                    g = 100 + Math.random() * 40;
+                    b = 200 + Math.random() * 55;
+                    break;
+                case 'forest':
+                    r = 30 + Math.random() * 40;
+                    g = 120 + Math.random() * 60;
+                    b = 40 + Math.random() * 30;
+                    break;
+                case 'sand':
+                    r = 220 + Math.random() * 35;
+                    g = 200 + Math.random() * 55;
+                    b = 80 + Math.random() * 40;
+                    break;
+                case 'soil':
+                    r = 160 + Math.random() * 50;
+                    g = 100 + Math.random() * 40;
+                    b = 60 + Math.random() * 30;
+                    break;
+                case 'farmland':
+                    r = 80 + Math.random() * 40;
+                    g = 150 + Math.random() * 50;
+                    b = 120 + Math.random() * 40;
+                    break;
+                default:
+                    r = 150; g = 150; b = 150;
+            }
+
             ctx.fillStyle = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
             ctx.fillRect(x, y, 1, 1);
         }
     }
-    
+
     // Конвертируем в Data URL и загружаем
     const dataURL = canvas.toDataURL();
     const img = new Image();
     img.onload = function() {
         processNDVIImage(img);
-        alert('Тестовая NDVI карта создана! Теперь можно запустить симуляцию.');
+        alert('Тестовая NDVI карта создана! Теперь можно запустить симуляцию.\n\nОсобенности карты:\n• Естественные формы зон\n• Диагональные реки\n• Извилистые дороги\n• Лес распространяет пожар БЫСТРЕЕ (90%)\n• Почва медленно (30%)\n• Сельхоз очень медленно (20%)');
     };
     img.src = dataURL;
 }
