@@ -110,6 +110,7 @@ body {
     background-color: var(--darker-bg);
     position: relative;
     overflow: hidden;
+    aspect-ratio: 1 / 1; /* Делаем контейнер квадратным */
 }
 
 .map-grid {
@@ -119,41 +120,70 @@ body {
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-columns: repeat(30, 1fr);
-    grid-template-rows: repeat(30, 1fr);
-    gap: 1px;
-    padding: 10px;
+    grid-template-columns: repeat(60, 1fr);
+    grid-template-rows: repeat(60, 1fr);
+    gap: 0.5px;
+    padding: 5px;
 }
 
 .map-cell {
     background-color: rgba(255, 255, 255, 0.03);
     transition: all 0.3s ease;
-    border-radius: 2px;
+    border-radius: 1px;
     cursor: pointer;
+    aspect-ratio: 1 / 1;
 }
 
 .map-cell:hover {
     filter: brightness(1.3);
 }
 
+/* Стили для типов поверхности NDVI */
+.map-cell.water {
+    background-color: rgba(0, 100, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.map-cell.forest {
+    background-color: rgba(0, 180, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.map-cell.sand {
+    background-color: rgba(255, 255, 100, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.map-cell.soil {
+    background-color: rgba(220, 80, 60, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.map-cell.farmland {
+    background-color: rgba(0, 200, 200, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.map-cell.unknown {
+    background-color: rgba(128, 128, 128, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Уровни опасности */
 .map-cell.low {
-    background-color: rgba(0, 200, 150, 0.2);
-    border: 1px solid rgba(0, 200, 150, 0.4);
+    box-shadow: inset 0 0 10px rgba(0, 200, 150, 0.3);
 }
 
 .map-cell.medium {
-    background-color: rgba(255, 221, 89, 0.3);
-    border: 1px solid rgba(255, 221, 89, 0.5);
+    box-shadow: inset 0 0 10px rgba(255, 221, 89, 0.4);
 }
 
 .map-cell.high {
-    background-color: rgba(255, 159, 67, 0.4);
-    border: 1px solid rgba(255, 159, 67, 0.6);
+    box-shadow: inset 0 0 10px rgba(255, 159, 67, 0.5);
 }
 
 .map-cell.extreme {
-    background-color: rgba(255, 71, 87, 0.5);
-    border: 1px solid rgba(255, 71, 87, 0.7);
+    box-shadow: inset 0 0 10px rgba(255, 71, 87, 0.6);
 }
 
 .map-cell.fire {
@@ -161,6 +191,7 @@ body {
     box-shadow: 0 0 10px var(--accent-red);
     border: 1px solid rgba(255, 255, 255, 0.3);
     animation: pulse 1.5s infinite;
+    z-index: 2;
 }
 
 @keyframes pulse {
@@ -228,6 +259,37 @@ body {
     outline: none;
     border-color: var(--accent-blue);
     box-shadow: 0 0 0 2px rgba(45, 140, 255, 0.2);
+}
+.input-group input[type="file"] {
+    padding: 0.6rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.input-group input[type="file"]:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(45, 140, 255, 0.2);
+}
+
+.input-group input[type="file"]::file-selector-button {
+    background-color: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    margin-right: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.input-group input[type="file"]::file-selector-button:hover {
+    background-color: #1a7ae6;
 }
 
 .calculate-btn {
@@ -343,6 +405,100 @@ body {
     animation: pulse 1.5s infinite;
 }
 
+/* Легенда для типов поверхности NDVI */
+.ndvi-legend {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ndvi-legend h3 {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-muted);
+}
+
+.ndvi-legend-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ndvi-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.ndvi-color-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.ndvi-color-box.water {
+    background-color: rgba(0, 100, 255, 0.9);
+}
+
+.ndvi-color-box.forest {
+    background-color: rgba(0, 150, 0, 0.9);
+}
+
+.ndvi-color-box.sand {
+    background-color: rgba(255, 255, 0, 0.9);
+}
+
+.ndvi-color-box.soil {
+    background-color: rgba(200, 0, 0, 0.9);
+}
+
+.ndvi-color-box.farmland {
+    background-color: rgba(0, 200, 200, 0.9);
+}
+
+.ndvi-color-box.unknown {
+    background-color: rgba(128, 128, 128, 0.9);
+}
+
+/* Панель ручного редактирования */
+.surface-panel {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.surface-panel h3 {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-muted);
+}
+
+.surface-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.surface-options button {
+    padding: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+}
+
+.surface-options button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-blue);
+}
+
 /* Footer */
 .footer {
     background-color: var(--darker-bg);
@@ -378,5 +534,21 @@ body {
     
     .map-container {
         flex: 0 0 60vh;
+    }
+    
+    .map-grid {
+        grid-template-columns: repeat(40, 1fr);
+        grid-template-rows: repeat(40, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .map-grid {
+        grid-template-columns: repeat(30, 1fr);
+        grid-template-rows: repeat(30, 1fr);
+    }
+    
+    .surface-options {
+        grid-template-columns: 1fr;
     }
 }

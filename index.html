@@ -8,7 +8,7 @@
 </head>
 <body>
     <header class="header">
-        <h1>Система моделирования лесных пожаров</h1>
+        <h1>Система моделирования лесных пожаров с NDVI анализом</h1>
     </header>
 
     <main class="main-container">
@@ -27,12 +27,23 @@
                 </div>
                 <div class="map-overlay">
                     <div class="coordinates">X: 0, Y: 0</div>
+                    <div class="surface-info">Поверхность: неизвестно</div>
                 </div>
             </div>
         </section>
 
         <!-- Панель управления -->
         <aside class="control-panel">
+            <!-- Блок загрузки NDVI -->
+            <div class="input-section">
+                <h2>Загрузка NDVI карты</h2>
+                <div class="input-group">
+                    <label for="ndvi-upload">Загрузить NDVI изображение</label>
+                    <input type="file" id="ndvi-upload" accept="image/*">
+                </div>
+                <button class="calculate-btn" id="analyze-ndvi-btn">Анализировать NDVI</button>
+            </div>
+
             <!-- Блок ввода данных FWI -->
             <div class="input-section">
                 <h2>Рассчитать индекс пожарной опасности (FWI)</h2>
@@ -53,6 +64,19 @@
                     <input type="number" id="precipitation" placeholder="0">
                 </div>
                 <button class="calculate-btn" id="calculate-btn">Рассчитать FWI</button>
+            </div>
+
+            <!-- Блок параметров распространения -->
+            <div class="input-section">
+                <h2>Параметры распространения</h2>
+                <div class="input-group">
+                    <label for="wind-direction">Направление ветра (градусы)</label>
+                    <input type="number" id="wind-direction" min="0" max="360" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="wind-effect">Сила ветра (множитель)</label>
+                    <input type="number" id="wind-effect" min="0.5" max="3" step="0.1" value="1.0">
+                </div>
             </div>
 
             <!-- Блок результатов прогноза -->
@@ -92,6 +116,33 @@
                     <div class="legend-item">
                         <div class="color-box fire"></div>
                         <span>Активный пожар</span>
+                    </div>
+                </div>
+
+                <!-- Легенда типов поверхности NDVI -->
+                <div class="ndvi-legend">
+                    <h3>Типы поверхности</h3>
+                    <div class="ndvi-legend-items">
+                        <div class="ndvi-legend-item">
+                            <div class="ndvi-color-box water"></div>
+                            <span>Вода (барьер)</span>
+                        </div>
+                        <div class="ndvi-legend-item">
+                            <div class="ndvi-color-box forest"></div>
+                            <span>Лес (высокая горючесть)</span>
+                        </div>
+                        <div class="ndvi-legend-item">
+                            <div class="ndvi-color-box sand"></div>
+                            <span>Песок (барьер)</span>
+                        </div>
+                        <div class="ndvi-legend-item">
+                            <div class="ndvi-color-box soil"></div>
+                            <span>Почва (средняя горючесть)</span>
+                        </div>
+                        <div class="ndvi-legend-item">
+                            <div class="ndvi-color-box farmland"></div>
+                            <span>Сельхозземли (низкая горючесть)</span>
+                        </div>
                     </div>
                 </div>
             </div>
