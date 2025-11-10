@@ -1,0 +1,382 @@
+:root {
+    --dark-bg: #0d1421;
+    --darker-bg: #080c15;
+    --panel-bg: #1a2332;
+    --accent-blue: #2d8cff;
+    --accent-green: #00c896;
+    --accent-red: #ff4757;
+    --accent-orange: #ff9f43;
+    --accent-yellow: #ffdd59;
+    --text-light: #e4e7ec;
+    --text-muted: #8a94a6;
+    --border-radius: 12px;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --inner-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    --glow: 0 0 15px rgba(45, 140, 255, 0.5);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    background-color: var(--darker-bg);
+    padding: 1.2rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: var(--shadow);
+    z-index: 10;
+}
+
+.header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Main Container */
+.main-container {
+    display: flex;
+    flex: 1;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    overflow: hidden;
+}
+
+/* Map Container */
+.map-container {
+    flex: 0 0 70%;
+    background-color: var(--panel-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.map-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.map-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.map-controls {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.map-controls button {
+    background-color: rgba(45, 140, 255, 0.1);
+    border: 1px solid rgba(45, 140, 255, 0.3);
+    color: var(--accent-blue);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.map-controls button:hover {
+    background-color: rgba(45, 140, 255, 0.2);
+    box-shadow: var(--glow);
+}
+
+.map-area {
+    flex: 1;
+    background-color: var(--darker-bg);
+    position: relative;
+    overflow: hidden;
+}
+
+.map-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(30, 1fr);
+    grid-template-rows: repeat(30, 1fr);
+    gap: 1px;
+    padding: 10px;
+}
+
+.map-cell {
+    background-color: rgba(255, 255, 255, 0.03);
+    transition: all 0.3s ease;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.map-cell:hover {
+    filter: brightness(1.3);
+}
+
+.map-cell.low {
+    background-color: rgba(0, 200, 150, 0.2);
+    border: 1px solid rgba(0, 200, 150, 0.4);
+}
+
+.map-cell.medium {
+    background-color: rgba(255, 221, 89, 0.3);
+    border: 1px solid rgba(255, 221, 89, 0.5);
+}
+
+.map-cell.high {
+    background-color: rgba(255, 159, 67, 0.4);
+    border: 1px solid rgba(255, 159, 67, 0.6);
+}
+
+.map-cell.extreme {
+    background-color: rgba(255, 71, 87, 0.5);
+    border: 1px solid rgba(255, 71, 87, 0.7);
+}
+
+.map-cell.fire {
+    background-color: var(--accent-red);
+    box-shadow: 0 0 10px var(--accent-red);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; }
+    100% { opacity: 0.8; }
+}
+
+.map-overlay {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+/* Control Panel */
+.control-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input-section, .results-section, .legend-section {
+    background-color: var(--panel-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.input-section h2, .results-section h2, .legend-section h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1.2rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: var(--text-light);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(45, 140, 255, 0.2);
+}
+
+.calculate-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+    box-shadow: var(--shadow);
+}
+
+.calculate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Results Section */
+.results-widget {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.results-placeholder {
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.results-placeholder p:first-child {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.mini-map {
+    width: 100%;
+    height: 150px;
+    background-color: var(--darker-bg);
+    border-radius: 6px;
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    gap: 1px;
+    padding: 5px;
+}
+
+.mini-cell {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 1px;
+    transition: all 0.3s ease;
+}
+
+.mini-cell.fire {
+    background-color: var(--accent-red);
+    box-shadow: 0 0 5px var(--accent-red);
+}
+
+/* Legend Section */
+.legend-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.color-box.low {
+    background-color: rgba(0, 200, 150, 0.6);
+    border: 1px solid rgba(0, 200, 150, 0.8);
+}
+
+.color-box.medium {
+    background-color: rgba(255, 221, 89, 0.7);
+    border: 1px solid rgba(255, 221, 89, 0.9);
+}
+
+.color-box.high {
+    background-color: rgba(255, 159, 67, 0.8);
+    border: 1px solid rgba(255, 159, 67, 1);
+}
+
+.color-box.extreme {
+    background-color: rgba(255, 71, 87, 0.9);
+    border: 1px solid rgba(255, 71, 87, 1);
+}
+
+.color-box.fire {
+    background-color: var(--accent-red);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    animation: pulse 1.5s infinite;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--darker-bg);
+    padding: 1rem 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+    color: var(--accent-blue);
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .main-container {
+        flex-direction: column;
+    }
+    
+    .map-container {
+        flex: 0 0 60vh;
+    }
+}

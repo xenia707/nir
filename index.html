@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система моделирования лесных пожаров</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Система моделирования лесных пожаров</h1>
+    </header>
+
+    <main class="main-container">
+        <!-- Основная карта -->
+        <section class="map-container">
+            <div class="map-header">
+                <div class="map-title">Интерактивная карта пожарной опасности</div>
+                <div class="map-controls">
+                    <button id="reset-btn">Сброс</button>
+                    <button id="simulate-btn">Запуск симуляции</button>
+                </div>
+            </div>
+            <div class="map-area">
+                <div class="map-grid" id="map-grid">
+                    <!-- Клетки карты будут сгенерированы через JavaScript -->
+                </div>
+                <div class="map-overlay">
+                    <div class="coordinates">X: 0, Y: 0</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Панель управления -->
+        <aside class="control-panel">
+            <!-- Блок ввода данных FWI -->
+            <div class="input-section">
+                <h2>Рассчитать индекс пожарной опасности (FWI)</h2>
+                <div class="input-group">
+                    <label for="temperature">Температура (°C)</label>
+                    <input type="number" id="temperature" placeholder="25">
+                </div>
+                <div class="input-group">
+                    <label for="humidity">Относительная влажность (%)</label>
+                    <input type="number" id="humidity" placeholder="45">
+                </div>
+                <div class="input-group">
+                    <label for="wind-speed">Скорость ветра (км/ч)</label>
+                    <input type="number" id="wind-speed" placeholder="15">
+                </div>
+                <div class="input-group">
+                    <label for="precipitation">Осадки (мм)</label>
+                    <input type="number" id="precipitation" placeholder="0">
+                </div>
+                <button class="calculate-btn" id="calculate-btn">Рассчитать FWI</button>
+            </div>
+
+            <!-- Блок результатов прогноза -->
+            <div class="results-section">
+                <h2>Результаты прогноза</h2>
+                <div class="results-widget" id="results-widget">
+                    <div class="results-placeholder">
+                        <p>Расчёт не выполнен</p>
+                        <p>Введите данные и нажмите "Рассчитать"</p>
+                    </div>
+                    <div class="mini-map" id="mini-map">
+                        <!-- Мини-карта для визуализации пожара -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Легенда карты -->
+            <div class="legend-section">
+                <h2>Легенда карты</h2>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="color-box low"></div>
+                        <span>Низкая опасность</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box medium"></div>
+                        <span>Средняя опасность</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box high"></div>
+                        <span>Высокая опасность</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box extreme"></div>
+                        <span>Чрезвычайная опасность</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box fire"></div>
+                        <span>Активный пожар</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="footer">
+        <div class="update-info">
+            Последнее обновление: <span id="update-date">--.--.---- --:--:--</span>
+        </div>
+        <div class="footer-links">
+            <a href="#">Документация</a>
+            <a href="#">О системе</a>
+            <a href="#">Контакты</a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
