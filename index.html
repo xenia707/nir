@@ -19,6 +19,21 @@
                 <div class="map-controls">
                     <button id="reset-btn">Сброс</button>
                     <button id="simulate-btn">Запуск симуляции</button>
+                    <div class="grid-size-control">
+                        <label for="grid-size">Размер сетки:</label>
+                        <select id="grid-size">
+                            <option value="small">Мелкая (120×120)</option>
+                            <option value="medium" selected>Средняя (80×80)</option>
+                            <option value="large">Крупная (40×40)</option>
+                            <option value="custom">Пользовательская</option>
+                        </select>
+                    </div>
+                    <div class="custom-size-control" id="custom-size-control" style="display: none;">
+                        <input type="number" id="custom-cols" placeholder="Столбцы" min="10" max="200" value="80">
+                        <span>×</span>
+                        <input type="number" id="custom-rows" placeholder="Строки" min="10" max="200" value="80">
+                        <button id="apply-custom-size">Применить</button>
+                    </div>
                 </div>
             </div>
             <div class="map-area">
@@ -28,6 +43,7 @@
                 <div class="map-overlay">
                     <div class="coordinates">X: 0, Y: 0</div>
                     <div class="surface-info">Поверхность: неизвестно</div>
+                    <div class="grid-info">Сетка: 80×80</div>
                 </div>
             </div>
         </section>
@@ -42,6 +58,7 @@
                     <input type="file" id="ndvi-upload" accept="image/*">
                 </div>
                 <button class="calculate-btn" id="analyze-ndvi-btn">Анализировать NDVI</button>
+                <button class="calculate-btn" id="test-ndvi-btn" style="margin-top: 0.5rem; background-color: var(--accent-orange);">Создать тестовую NDVI карту</button>
             </div>
 
             <!-- Блок ввода данных FWI -->
